@@ -43,5 +43,3 @@ phases:
 artifacts:
   files:
   - packaged.yaml
-  - template.yaml
-  - main
