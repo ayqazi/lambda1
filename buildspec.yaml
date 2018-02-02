@@ -6,7 +6,7 @@ env:
     # Make sure to provide a valid S3 bucket name (it must exist already).
     # The CodeBuild IAM role must allow write access to it.
     S3_BUCKET: "asfand-test"
-    PACKAGE: "github.com/aws-samples/lambda-go-samples"
+    PACKAGE: "github.com/ayqazi/lambda1"
 
 phases:
   install:
