@@ -33,6 +33,26 @@ Resources:
                 Resource: '*'
                 Effect: Allow
 
+  ChangeSetReplaceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: cloudformation.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: lambda1-cloudformation-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action: '*'
+                Resource: '*'
+                Effect: Allow
+
   Pipeline:
     Type: 'AWS::CodePipeline::Pipeline'
     Properties:
@@ -70,3 +90,32 @@ Resources:
                 - { Name: source-artifact }
               OutputArtifacts:
                 - { Name: build-artifact }
+        - Name: deploy-test-stage
+          Actions:
+            - Name: test-create-change-set-action
+              ActionTypeId:
+                Category: Deploy
+                Version: 1
+                Owner: AWS
+                Provider: CloudFormation
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                StackName: lambda1-test-function
+                ChangeSetName: lambda1-test-function
+                TemplatePath: build-artifact::packaged.yaml
+                RoleArn: !GetAtt ChangeSetReplaceRole.Arn
+                Capabilities: CAPABILITY_IAM
+              InputArtifacts:
+                - { Name: build-artifact }
+              RunOrder: 1
+            - Name: test-execute-change-set-action
+              ActionTypeId:
+                Category: Deploy
+                Version: 1
+                Owner: AWS
+                Provider: CloudFormation
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                StackName: lambda1-test-function
+                ChangeSetName: lambda1-test-function
+              RunOrder: 2
