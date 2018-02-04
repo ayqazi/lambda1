@@ -7,8 +7,8 @@ Resources:
     Properties:
       Handler: main
       Runtime: go1.x
-      Tracing: Active
-      Events:
+      AutoPublishAlias: test
+     Events:
         GetEvent:
           Type: Api
           Properties:
