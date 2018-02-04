@@ -17,4 +17,4 @@ test:
 deploy_pipeline:
 	aws cloudformation update-stack --stack-name lambda1-pipeline --template-body "$$(cat pipeline.yaml)" \
 	                   --capabilities CAPABILITY_IAM --parameters \
-	                     "ParameterKey=GithubToken,ParameterValue=$PIPELINE_GITHUB_TOKEN"
+	                     "ParameterKey=GithubToken,ParameterValue=$(PIPELINE_GITHUB_TOKEN)"
