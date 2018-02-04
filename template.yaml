@@ -8,7 +8,7 @@ Resources:
       Handler: main
       Runtime: go1.x
       AutoPublishAlias: test
-     Events:
+      Events:
         GetEvent:
           Type: Api
           Properties:
