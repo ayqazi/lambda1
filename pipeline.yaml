@@ -1,0 +1,72 @@
+---
+Parameters:
+  GithubToken:
+    Type: String
+    NoEcho: true
+
+Resources:
+  CodePipelineArtifactsBucket:
+    Type: 'AWS::S3::Bucket'
+
+  PipelineRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: codepipeline.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: lambda1-pipeline-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                - cloudwatch:*
+                - s3:*
+                - cloudformation:*
+                - codebuild:*
+                - iam:PassRole
+                Resource: '*'
+                Effect: Allow
+
+  Pipeline:
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties:
+      Name: lambda1-pipeline
+      ArtifactStore: { Type: S3, Location: !Ref CodePipelineArtifactsBucket }
+      RestartExecutionOnUpdate: true
+      RoleArn: !GetAtt PipelineRole.Arn
+      Stages:
+        - Name: source-stage
+          Actions:
+            - Name: source-action
+              ActionTypeId:
+                Category: Source
+                Version: 1
+                Owner: ThirdParty
+                Provider: GitHub
+              Configuration:
+                Owner: ayqazi
+                Repo: lambda1
+                Branch: master
+                OAuthToken: !Ref GithubToken
+              OutputArtifacts:
+                - { Name: source-artifact }
+        - Name: build-stage
+          Actions:
+            - Name: build-action
+              ActionTypeId:
+                Category: Build
+                Version: 1
+                Owner: AWS
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: test-lambda1-build-foobar
+              InputArtifacts:
+                - { Name: source-artifact }
+              OutputArtifacts:
+                - { Name: build-artifact }

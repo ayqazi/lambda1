@@ -1,0 +1,8 @@
+# Copy this file to .make-variables in the root of the project, and edit to requirements
+#
+# Required variables are uncommented.
+# Optional variables are commented out.
+
+PIPELINE_GITHUB_TOKEN := xxxxxxxxxxxxxxxxxxxxxxx
+# AWS_PROFILE := <profile_name>
+# AWS_DEFAULT_REGION := <region>
