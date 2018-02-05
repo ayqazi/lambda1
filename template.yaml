@@ -9,7 +9,7 @@ Resources:
       Runtime: go1.x
       AutoPublishAlias: test
       Events:
-        GetEvent:
+        PostRoot:
           Type: Api
           Properties:
             Path: /
