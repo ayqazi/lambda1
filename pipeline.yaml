@@ -122,7 +122,7 @@ Resources:
                 Owner: AWS
                 Provider: CodeBuild
               Configuration:
-                ProjectName: test-lambda1-build-foobar
+                ProjectName: !Ref BuildProject
               InputArtifacts:
                 - { Name: source-artifact }
               OutputArtifacts:
