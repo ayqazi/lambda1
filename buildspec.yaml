@@ -2,10 +2,6 @@
 version: 0.2
 env:
   variables:
-    # This S3 bucket is used to store the packaged Lambda deployment bundle.
-    # Make sure to provide a valid S3 bucket name (it must exist already).
-    # The CodeBuild IAM role must allow write access to it.
-    S3_BUCKET: "asfand-test"
     PACKAGE: "github.com/ayqazi/lambda1"
 
 phases:
@@ -38,7 +34,10 @@ phases:
       # Build the go application
       - go build -o main
       # Package the application with AWS SAM
-      - aws cloudformation package --template-file template.yaml --s3-bucket ${S3_BUCKET} --output-template-file packaged.yaml
+      - >
+          aws cloudformation package
+          --template-file template.yaml --s3-bucket "${PACKAGE_S3_BUCKET}" --s3-prefix "${PACKAGE_S3_BUCKET_PATH}"
+          --output-template-file packaged.yaml
 
 artifacts:
   files:

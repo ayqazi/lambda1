@@ -5,7 +5,7 @@ Parameters:
     NoEcho: true
 
 Resources:
-  CodePipelineArtifactsBucket:
+  BuildSupportS3Bucket:
     Type: 'AWS::S3::Bucket'
 
   PipelineRole:
@@ -85,6 +85,11 @@ Resources:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/golang:1.7.3
+        EnvironmentVariables:
+          - Name: PACKAGE_S3_BUCKET
+            Value: !Ref BuildSupportS3Bucket
+          - Name: PACKAGE_S3_BUCKET_PATH
+            Value: 'lambda1-build'
       TimeoutInMinutes: 5
       Artifacts:
         Type: CODEPIPELINE
@@ -94,7 +99,7 @@ Resources:
     Type: 'AWS::CodePipeline::Pipeline'
     Properties:
       Name: lambda1-pipeline
-      ArtifactStore: { Type: S3, Location: !Ref CodePipelineArtifactsBucket }
+      ArtifactStore: { Type: S3, Location: !Ref BuildSupportS3Bucket }
       RestartExecutionOnUpdate: true
       RoleArn: !GetAtt PipelineRole.Arn
       Stages:
