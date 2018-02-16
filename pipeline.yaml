@@ -103,9 +103,9 @@ Resources:
       RestartExecutionOnUpdate: true
       RoleArn: !GetAtt PipelineRole.Arn
       Stages:
-        - Name: source-stage
+        - Name: get-source
           Actions:
-            - Name: source-action
+            - Name: get-source
               ActionTypeId:
                 Category: Source
                 Version: 1
@@ -118,9 +118,9 @@ Resources:
                 OAuthToken: !Ref GithubToken
               OutputArtifacts:
                 - { Name: source-artifact }
-        - Name: build-stage
+        - Name: build
           Actions:
-            - Name: build-action
+            - Name: build
               ActionTypeId:
                 Category: Build
                 Version: 1
@@ -132,9 +132,9 @@ Resources:
                 - { Name: source-artifact }
               OutputArtifacts:
                 - { Name: build-artifact }
-        - Name: deploy-test-stage
+        - Name: deploy
           Actions:
-            - Name: test-create-change-set-action
+            - Name: create-change-set
               ActionTypeId:
                 Category: Deploy
                 Version: 1
@@ -142,15 +142,15 @@ Resources:
                 Provider: CloudFormation
               Configuration:
                 ActionMode: CHANGE_SET_REPLACE
-                StackName: lambda1-test-function
-                ChangeSetName: lambda1-test-function
+                StackName: lambda1-function
+                ChangeSetName: lambda1-function
                 TemplatePath: build-artifact::packaged.yaml
                 RoleArn: !GetAtt ChangeSetReplaceRole.Arn
                 Capabilities: CAPABILITY_IAM
               InputArtifacts:
                 - { Name: build-artifact }
               RunOrder: 1
-            - Name: test-execute-change-set-action
+            - Name: execute-change-set
               ActionTypeId:
                 Category: Deploy
                 Version: 1
@@ -158,6 +158,6 @@ Resources:
                 Provider: CloudFormation
               Configuration:
                 ActionMode: CHANGE_SET_EXECUTE
-                StackName: lambda1-test-function
-                ChangeSetName: lambda1-test-function
+                StackName: lambda1-function
+                ChangeSetName: lambda1-function
               RunOrder: 2
