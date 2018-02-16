@@ -33,6 +33,28 @@ Resources:
                 Resource: '*'
                 Effect: Allow
 
+  CodeBuildRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: codebuild.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: lambda1-codebuild-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                - '*'
+                - iam:PassRole
+                Resource: '*'
+                Effect: Allow
+
   ChangeSetReplaceRole:
     Type: 'AWS::IAM::Role'
     Properties:
@@ -52,6 +74,21 @@ Resources:
               - Action: '*'
                 Resource: '*'
                 Effect: Allow
+
+  BuildProject:
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      Name: 'lambda1-build'
+      Source:
+        Type: CODEPIPELINE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/golang:1.7.3
+      TimeoutInMinutes: 5
+      Artifacts:
+        Type: CODEPIPELINE
+      ServiceRole: !GetAtt CodeBuildRole.Arn
 
   Pipeline:
     Type: 'AWS::CodePipeline::Pipeline'
